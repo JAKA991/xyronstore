@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XYRON STORE</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="bg-fixed"></div>
+
+  <div class="navbar navbar-clean">
+    <div class="nav-brand">
+      <img src="/logo.jpg" class="logo-img" alt="Logo">
+      <div class="brand-text">
+        <span class="brand-name">XYRON STORE</span>
+        <small class="brand-sub">Premium Files Store</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1 class="logo-anim">XYRON STORE</h1>
+
+      <div class="badges">
+        <span>Trusted Seller</span>
+        <span>Fast Respon</span>
+        <span>24/7 Support</span>
+      </div>
+
+      <p class="desc">
+        File premium aman, anti-ban, kualitas mantap. Bisa dipakai di semua device,
+        instalasi kami bantu gratis sampai beres.
+      </p>
+    </div>
+
+    <div class="premium-tabs-wrap">
+      <div class="premium-tabs">
+        <button class="premium-tab active" data-target="all-section">
+          Semua
+          <span><%= products.length %></span>
+        </button>
+        <button class="premium-tab" data-target="android-section">
+          Android
+          <span><%= android.length %></span>
+        </button>
+        <button class="premium-tab" data-target="iphone-section">
+          iPhone
+          <span><%= iphone.length %></span>
+        </button>
+      </div>
+    </div>
+
+    <section id="all-section" class="premium-section active-premium-section">
+      <div class="premium-section-head">
+        <h2>Semua Produk</h2>
+        <p>Menampilkan seluruh produk yang tersedia.</p>
+      </div>
+
+      <% if (!products || products.length === 0) { %>
+        <div class="empty-box premium-empty">
+          <div class="empty-icon">📦</div>
+          <div>Belum ada produk.</div>
+        </div>
+      <% } else { %>
+        <div class="grid">
+          <% products.forEach(product => { %>
+            <div class="card glass-box card-hover">
+              <% if (product.bestSeller) { %>
+                <div class="best-badge">POPULAR</div>
+              <% } %>
+
+              <% if (product.image) { %>
+                <img src="/uploads/<%= product.image %>" alt="<%= product.title %>">
+              <% } %>
+
+              <div class="tag"><%= product.category %></div>
+              <h3><%= product.title %></h3>
+              <p><%= product.description || "Produk premium siap order." %></p>
+              <div class="price">Rp <%= Number(product.price).toLocaleString("id-ID") %></div>
+
+              <% if (product.stock <= 0) { %>
+                <div class="stock sold">Sold Out</div>
+                <a class="order-btn disabled-btn" href="javascript:void(0)">Sold Out</a>
+              <% } else if (product.stock <= 3) { %>
+                <div class="stock limited">Limited Stock: <%= product.stock %></div>
+                <a class="order-btn" href="/checkout/<%= product.id %>">Beli Sekarang</a>
+              <% } else { %>
+                <div class="stock">Stock: <%= product.stock %></div>
+                <a class="order-btn" href="/checkout/<%= product.id %>">Beli Sekarang</a>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <section id="android-section" class="premium-section">
+      <div class="premium-section-head">
+        <h2>Produk Android</h2>
+        <p>Semua file dan produk khusus Android.</p>
+      </div>
+
+      <% if (!android || android.length === 0) { %>
+        <div class="empty-box premium-empty">
+          <div class="empty-icon">🤖</div>
+          <div>Belum ada produk Android.</div>
+        </div>
+      <% } else { %>
+        <div class="grid">
+          <% android.forEach(product => { %>
+            <div class="card glass-box card-hover">
+              <% if (product.bestSeller) { %>
+                <div class="best-badge">POPULAR</div>
+              <% } %>
+
+              <% if (product.image) { %>
+                <img src="/uploads/<%= product.image %>" alt="<%= product.title %>">
+              <% } %>
+
+              <div class="tag"><%= product.category %></div>
+              <h3><%= product.title %></h3>
+              <p><%= product.description || "Produk Android siap order." %></p>
+              <div class="price">Rp <%= Number(product.price).toLocaleString("id-ID") %></div>
+
+              <% if (product.stock <= 0) { %>
+                <div class="stock sold">Sold Out</div>
+                <a class="order-btn disabled-btn" href="javascript:void(0)">Sold Out</a>
+              <% } else if (product.stock <= 3) { %>
+                <div class="stock limited">Limited Stock: <%= product.stock %></div>
+                <a class="order-btn" href="/checkout/<%= product.id %>">Beli Sekarang</a>
+              <% } else { %>
+                <div class="stock">Stock: <%= product.stock %></div>
+                <a class="order-btn" href="/checkout/<%= product.id %>">Beli Sekarang</a>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <section id="iphone-section" class="premium-section">
+      <div class="premium-section-head">
+        <h2>Produk iPhone</h2>
+        <p>Semua file dan produk khusus iPhone.</p>
+      </div>
+
+      <% if (!iphone || iphone.length === 0) { %>
+        <div class="empty-box premium-empty">
+          <div class="empty-icon">🍎</div>
+          <div>Belum ada produk iPhone.</div>
+        </div>
+      <% } else { %>
+        <div class="grid">
+          <% iphone.forEach(product => { %>
+            <div class="card glass-box card-hover">
+              <% if (product.bestSeller) { %>
+                <div class="best-badge">POPULAR</div>
+              <% } %>
+
+              <% if (product.image) { %>
+                <img src="/uploads/<%= product.image %>" alt="<%= product.title %>">
+              <% } %>
+
+              <div class="tag"><%= product.category %></div>
+              <h3><%= product.title %></h3>
+              <p><%= product.description || "Produk iPhone siap order." %></p>
+              <div class="price">Rp <%= Number(product.price).toLocaleString("id-ID") %></div>
+
+              <% if (product.stock <= 0) { %>
+                <div class="stock sold">Sold Out</div>
+                <a class="order-btn disabled-btn" href="javascript:void(0)">Sold Out</a>
+              <% } else if (product.stock <= 3) { %>
+                <div class="stock limited">Limited Stock: <%= product.stock %></div>
+                <a class="order-btn" href="/checkout/<%= product.id %>">Beli Sekarang</a>
+              <% } else { %>
+                <div class="stock">Stock: <%= product.stock %></div>
+                <a class="order-btn" href="/checkout/<%= product.id %>">Beli Sekarang</a>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <div class="footer">© 2026 XYRON STORE</div>
+  </div>
+
+  <audio id="bg-music">
+    <source src="/music.mp3" type="audio/mpeg">
+  </audio>
+
+  <button id="music-toggle" class="music-off" type="button">🎵</button>
+
+  <script>
+    const premiumTabs = document.querySelectorAll(".premium-tab");
+    const premiumSections = document.querySelectorAll(".premium-section");
+
+    premiumTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const targetId = tab.getAttribute("data-target");
+
+        premiumTabs.forEach((btn) => btn.classList.remove("active"));
+        premiumSections.forEach((section) => section.classList.remove("active-premium-section"));
+
+        tab.classList.add("active");
+        document.getElementById(targetId).classList.add("active-premium-section");
+      });
+    });
+
+    const music = document.getElementById("bg-music");
+    const btn = document.getElementById("music-toggle");
+    let isPlaying = false;
+    let loopInterval;
+
+    function startMusic() {
+      if (isPlaying) return;
+      music.volume = 0.4;
+      music.play().catch(() => {});
+      isPlaying = true;
+      btn.classList.remove("music-off");
+
+      loopInterval = setInterval(() => {
+        music.currentTime = 0.1;
+      }, 5000);
+    }
+
+    function stopMusic() {
+      music.pause();
+      music.currentTime = 0;
+      clearInterval(loopInterval);
+      isPlaying = false;
+      btn.classList.add("music-off");
+    }
+
+    document.addEventListener("click", startMusic, { once: true });
+
+    btn.addEventListener("click", () => {
+      isPlaying ? stopMusic() : startMusic();
+    });
+  </script>
+</body>
+</html>

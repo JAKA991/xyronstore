@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Panel - XYRON STORE</title>
+  <link rel="stylesheet" href="/style.css?v=4">
+</head>
+<body>
+  <div class="bg-fixed"></div>
+
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="/logo.jpg" class="logo-img" alt="Logo">
+      <div class="brand-text">
+        <span class="brand-name">XYRON STORE</span>
+        <small class="brand-sub">Owner Control Panel</small>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a href="/">Beranda</a>
+      <a href="/admin">Admin</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="top-bar">
+      <h1>Owner Panel</h1>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stats-card">
+        <h3>Total User</h3>
+        <p><%= stats.totalUsers %></p>
+      </div>
+      <div class="stats-card">
+        <h3>User Active</h3>
+        <p><%= stats.activeUsers %></p>
+      </div>
+      <div class="stats-card">
+        <h3>User Banned</h3>
+        <p><%= stats.bannedUsers %></p>
+      </div>
+      <div class="stats-card">
+        <h3>Total Order</h3>
+        <p><%= stats.totalOrders %></p>
+      </div>
+      <div class="stats-card">
+        <h3>Total Produk</h3>
+        <p><%= stats.totalProducts %></p>
+      </div>
+    </div>
+
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+
+    <% if (success) { %>
+      <div class="success-box"><%= success %></div>
+    <% } %>
+
+    <% if (isMainOwner) { %>
+      <div class="panel-box">
+        <h2 style="margin-bottom:12px;">Title Khusus Owner Utama</h2>
+        <form action="/owner/update-title/<%= currentUser.id %>" method="POST" class="form-box loading-form">
+          <input
+            type="text"
+            name="title"
+            placeholder="Masukkan title owner utama"
+            value="<%= currentUser.title || '👑TUAN MUDA👑' %>"
+            required
+          >
+          <button type="submit" class="loading-submit-btn">Simpan Title</button>
+        </form>
+      </div>
+    <% } %>
+
+    <div class="panel-box">
+      <h2 style="margin-bottom:12px;">Tambah User Baru</h2>
+      <form action="/owner/create-user" method="POST" class="form-box loading-form">
+        <input type="text" name="username" placeholder="Username baru" required>
+        <input type="password" name="password" placeholder="Password baru" required>
+
+        <select name="role" required>
+          <option value="">Pilih role</option>
+          <option value="admin">Admin</option>
+          <% if (isMainOwner) { %>
+            <option value="owner">Owner</option>
+          <% } %>
+        </select>
+
+        <select name="status" required>
+          <option value="">Pilih status</option>
+          <option value="active">Active</option>
+          <option value="pending">Pending</option>
+          <option value="banned">Banned</option>
+        </select>
+
+        <button type="submit" class="loading-submit-btn">Buat User</button>
+      </form>
+    </div>
+
+    <section style="margin-top:28px;">
+      <div class="section-head">
+        <h2>Kelola User</h2>
+        <input
+          type="text"
+          id="userSearch"
+          class="panel-search"
+          placeholder="Cari username / role / status..."
+        >
+      </div>
+
+      <% if (!users || users.length === 0) { %>
+        <div class="empty-box premium-empty">
+          <div class="empty-icon">👤</div>
+          <div>Belum ada user.</div>
+        </div>
+      <% } else { %>
+        <div class="orders-grid" id="usersGrid">
+          <% users.forEach(user => { %>
+            <div
+              class="order-card glass-box searchable-user"
+              data-search="<%= `${user.username} ${user.role} ${user.status} ${user.title || ""}`.toLowerCase() %>"
+            >
+              <div class="order-status user-status-<%= user.status %>"><%= user.status.toUpperCase() %></div>
+
+              <h3><%= user.username %></h3>
+              <p><strong>Role:</strong> <%= user.role %></p>
+              <p><strong>Status:</strong> <%= user.status %></p>
+
+              <p><strong>Title:</strong></p>
+              <div class="user-title-badge"><%= user.title || "-" %></div>
+
+              <p style="margin-top:10px;">
+                <strong>Login Terakhir:</strong>
+                <%= user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("id-ID") : "-" %>
+              </p>
+              <p><strong>IP:</strong> <%= user.lastLoginIp || "-" %></p>
+              <p><strong>Device:</strong> <%= user.lastLoginDevice || "-" %></p>
+              <p style="margin-top:12px;"><strong>Dibuat:</strong> <%= new Date(user.createdAt).toLocaleString("id-ID") %></p>
+
+              <% const canTouch = currentUser.id !== user.id && user.id !== 1 && !(user.role === "owner" && !isMainOwner); %>
+
+              <% if (canTouch) { %>
+
+                <% if (isMainOwner) { %>
+                  <form action="/owner/update-title/<%= user.id %>" method="POST" class="form-box loading-form" style="margin-top:14px;">
+                    <input
+                      type="text"
+                      name="title"
+                      placeholder="Set title user ini..."
+                      value="<%= user.title || '' %>"
+                      required
+                    >
+                    <button type="submit" class="loading-submit-btn">Set Title</button>
+                  </form>
+                <% } %>
+
+                <div class="status-actions">
+                  <a href="/owner/set-status/<%= user.id %>/active">Set Active</a>
+                  <a href="/owner/set-status/<%= user.id %>/pending" class="confirm-action" data-confirm="Yakin mau ubah user ini ke pending?">Pending</a>
+                  <a href="/owner/set-status/<%= user.id %>/banned" class="confirm-action" data-confirm="Yakin mau banned user ini?">Banned</a>
+                </div>
+
+                <div class="status-actions">
+                  <a href="/owner/set-role/<%= user.id %>/admin">Jadi Admin</a>
+
+                  <% if (isMainOwner) { %>
+                    <a href="/owner/set-role/<%= user.id %>/owner">Jadi Owner</a>
+                  <% } %>
+
+                  <a href="/owner/kick/<%= user.id %>" class="confirm-action" data-confirm="Yakin mau kick user ini sekarang?">Kick</a>
+                </div>
+
+                <form action="/owner/reset-password/<%= user.id %>" method="POST" class="form-box loading-form" style="margin-top:14px;">
+                  <input type="password" name="newPassword" placeholder="Password baru user ini" required>
+                  <button type="submit" class="loading-submit-btn">Reset Password</button>
+                </form>
+
+                <a href="/owner/delete-user/<%= user.id %>" class="delete-btn confirm-action" data-confirm="Yakin mau hapus akun ini?">
+                  Hapus User
+                </a>
+
+              <% } else { %>
+                <div class="empty-box" style="margin-top:14px;">
+                  <% if (currentUser.id === user.id) { %>
+                    Ini akun kamu yang sedang login.
+                  <% } else if (user.id === 1) { %>
+                    Ini owner utama dan tidak bisa diubah.
+                  <% } else if (user.role === "owner") { %>
+                    Owner lain tidak bisa kamu ubah.
+                  <% } else { %>
+                    Akses dibatasi.
+                  <% } %>
+                </div>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <div class="footer">© 2026 XYRON STORE</div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/xyron-realtime.js?v=4"></script>
+  <script src="/panel-ui.js?v=4"></script>
+</body>
+</html>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+const socket = io();
+
+socket.on("users-updated", () => {
+  location.reload();
+});
+
+socket.on("force-logout", (data) => {
+  alert("Session berakhir: " + data.reason);
+  window.location.href = "/JakSkyLogin";
+});
+</script>

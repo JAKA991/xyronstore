@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "username": "Jaksky2029",
+    "passwordHash": "$2a$10$jaxKKx/tfhmugSthPSE8/OY9MNhogU7eblHm.HAdhOuE7Hl/v252G",
+    "role": "owner",
+    "status": "active",
+    "activeSessionId": "5XGyIPhXH-_gJpTGHR50o6Z0SgLr0Zkd",
+    "createdAt": "2026-04-08T21:03:39.000Z",
+    "title": "👑KESAYANGAN MAMA👑",
+    "lastLoginAt": "2026-04-09T07:40:32.019Z",
+    "lastLoginIp": "103.191.165.138",
+    "lastLoginDevice": "Android"
+  },
+  {
+    "id": 1775696001029,
+    "username": "admin",
+    "passwordHash": "$2a$10$HNQ.RUMeiNFF21Ak0DkKv.cK8xZEST60iJPtc253PK/rjj.DmRm2.",
+    "role": "owner",
+    "status": "active",
+    "activeSessionId": null,
+    "createdAt": "2026-04-09T00:53:21.399Z",
+    "title": "xyron store 🤖",
+    "lastLoginAt": "2026-04-09T05:28:26.602Z",
+    "lastLoginIp": "103.191.165.138",
+    "lastLoginDevice": "Android"
+  },
+  {
+    "id": 1775715070320,
+    "username": "Administrator",
+    "passwordHash": "$2a$10$8UqmL5Z8zG4/MB78X/Qnc.ztCQDqQs7d0pA07TmyMh5SwxwoCfBxy",
+    "role": "admin",
+    "status": "banned",
+    "activeSessionId": null,
+    "title": "Admin",
+    "lastLoginAt": "2026-04-09T07:40:49.523Z",
+    "lastLoginIp": "-",
+    "lastLoginDevice": "-",
+    "createdAt": "2026-04-09T06:11:10.685Z"
+  }
+]

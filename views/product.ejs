@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= product.title %> - XYRON STORE</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="bg-fixed"></div>
+
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="/logo.jpg" class="logo-img" alt="Logo">
+      <div class="brand-text">
+        <span class="brand-name">XYRON STORE</span>
+        <small class="brand-sub">Premium Files Store</small>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a href="/">Beranda</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="product-detail-box glass-box">
+      <div class="product-detail-image">
+        <% if (product.image) { %>
+          <img src="/uploads/<%= product.image %>" alt="<%= product.title %>">
+        <% } %>
+      </div>
+
+      <div class="product-detail-content">
+        <% if (product.bestSeller) { %>
+          <div class="best-badge static-badge">POPULAR</div>
+        <% } %>
+
+        <div class="tag"><%= product.category %></div>
+        <h1><%= product.title %></h1>
+        <p class="product-detail-desc"><%= product.description || "Produk premium siap order." %></p>
+        <div class="price">Rp <%= Number(product.price).toLocaleString("id-ID") %></div>
+
+        <% if (product.stock <= 0) { %>
+          <div class="stock sold">Sold Out</div>
+          <a class="order-btn disabled-btn" href="javascript:void(0)">Sold Out</a>
+        <% } else if (product.stock <= 3) { %>
+          <div class="stock limited">Limited Stock: <%= product.stock %></div>
+          <a class="order-btn loading-btn" href="/checkout/<%= product.id %>">Buy Now</a>
+        <% } else { %>
+          <div class="stock">Stock: <%= product.stock %></div>
+          <a class="order-btn loading-btn" href="/checkout/<%= product.id %>">Buy Now</a>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+      <section style="margin-top: 30px;">
+        <h2>Produk Serupa</h2>
+        <div class="grid">
+          <% relatedProducts.forEach(item => { %>
+            <div class="card glass-box">
+              <% if (item.bestSeller) { %>
+                <div class="best-badge">POPULAR</div>
+              <% } %>
+
+              <% if (item.image) { %>
+                <img src="/uploads/<%= item.image %>" alt="<%= item.title %>">
+              <% } %>
+
+              <div class="tag"><%= item.category %></div>
+              <h3><%= item.title %></h3>
+              <p><%= item.description || "Produk siap order." %></p>
+              <div class="price">Rp <%= Number(item.price).toLocaleString("id-ID") %></div>
+              <a class="order-btn loading-btn" href="/product/<%= item.id %>">Lihat Detail</a>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <div class="footer">© 2026 XYRON STORE</div>
+  </div>
+
+  <script>
+    document.querySelectorAll(".loading-btn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        if (this.classList.contains("disabled-btn")) return;
+        this.textContent = "Loading...";
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - XYRON STORE</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="bg-fixed"></div>
+
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="/logo.jpg" class="logo-img" alt="Logo">
+      <div class="brand-text">
+        <span class="brand-name">XYRON STORE</span>
+        <small class="brand-sub">Premium Files Store</small>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a href="/">Beranda</a>
+    </div>
+  </div>
+
+  <div class="container small-box">
+    <div class="panel-box">
+      <h1 style="font-size:32px; margin-bottom:10px;">Login</h1>
+      <p class="checkout-desc" style="margin-bottom:18px;">
+        Masuk ke panel sesuai hak akses akun kamu.
+      </p>
+
+      <% if (error) { %>
+        <div class="error"><%= error %></div>
+      <% } %>
+
+      <form method="POST" action="/JakSkyLogin" class="form-box">
+        <input type="text" name="username" placeholder="Masukkan username" required>
+        <input type="password" name="password" placeholder="Masukkan password" required>
+        <button type="submit">Masuk</button>
+      </form>
+
+      <div class="action-row">
+        <a class="back-link" href="/">Kembali ke Beranda</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">© 2026 XYRON STORE</div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1775679084346,
+    "title": "Aim lock auto head",
+    "price": 500000,
+    "category": "Android",
+    "description": "",
+    "stock": 0,
+    "bestSeller": false,
+    "image": null
+  },
+  {
+    "id": 1775680359016,
+    "title": "Branded ",
+    "price": 60000,
+    "category": "iPhone",
+    "description": "",
+    "stock": 797,
+    "bestSeller": true,
+    "image": null
+  },
+  {
+    "id": 1775691195018,
+    "title": "Q",
+    "price": 7000000,
+    "category": "iPhone",
+    "description": "",
+    "stock": 0,
+    "bestSeller": true,
+    "image": null
+  },
+  {
+    "id": 1775709612949,
+    "title": "ILHAM X JULE",
+    "price": 20000000,
+    "category": "Android",
+    "description": "auto puas ",
+    "stock": 1,
+    "bestSeller": true,
+    "image": "product-1775709612783-17201.jpg"
+  }
+]

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - XYRON STORE</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="bg-fixed"></div>
+
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="/logo.jpg" class="logo-img" alt="Logo">
+      <div class="brand-text">
+        <span class="brand-name">XYRON STORE</span>
+        <small class="brand-sub">Admin Panel</small>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a href="/">Beranda</a>
+      <% if (currentUser && currentUser.role === "owner") { %>
+        <a href="/owner">Owner</a>
+      <% } %>
+      <a href="/logout">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="top-bar">
+      <h1>Admin Panel</h1>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stats-card">
+        <h3>Total Produk</h3>
+        <p><%= stats.totalProducts %></p>
+      </div>
+      <div class="stats-card">
+        <h3>Total Order</h3>
+        <p><%= stats.totalOrders %></p>
+      </div>
+      <div class="stats-card">
+        <h3>Pending</h3>
+        <p><%= stats.pendingOrders %></p>
+      </div>
+      <div class="stats-card">
+        <h3>Selesai</h3>
+        <p><%= stats.doneOrders %></p>
+      </div>
+    </div>
+
+    <div class="panel-box">
+      <h2 style="margin-bottom: 12px;">Upload Produk</h2>
+
+      <form action="/admin/upload" method="POST" enctype="multipart/form-data" class="form-box loading-form">
+        <input type="text" name="title" placeholder="Nama produk" required>
+        <input type="number" name="price" placeholder="Harga produk" required>
+
+        <select name="category" required>
+          <option value="">Pilih kategori</option>
+          <option value="Android">Android</option>
+          <option value="iPhone">iPhone</option>
+        </select>
+
+        <textarea name="description" placeholder="Deskripsi produk"></textarea>
+        <input type="number" name="stock" placeholder="Jumlah stock" required>
+
+        <label class="form-check">
+          <input type="checkbox" name="bestSeller">
+          Tandai sebagai Popular
+        </label>
+
+        <input type="file" name="image" accept="image/*">
+        <button type="submit" class="loading-submit-btn">Upload Produk</button>
+      </form>
+    </div>
+
+    <section style="margin-top: 28px;">
+      <div class="section-head">
+        <h2>Daftar Produk</h2>
+        <input
+          type="text"
+          id="productSearch"
+          class="panel-search"
+          placeholder="Cari produk..."
+        >
+      </div>
+
+      <% if (!products || products.length === 0) { %>
+        <div class="empty-box premium-empty">
+          <div class="empty-icon">📦</div>
+          <div>Belum ada produk.</div>
+        </div>
+      <% } else { %>
+        <div class="grid" id="productGrid">
+          <% products.forEach(product => { %>
+            <div
+              class="card glass-box searchable-product"
+              data-search="<%= `${product.title} ${product.category} ${product.description || ""}`.toLowerCase() %>"
+            >
+              <% if (product.bestSeller) { %>
+                <div class="best-badge">POPULAR</div>
+              <% } %>
+
+              <% if (product.image) { %>
+                <img src="/uploads/<%= product.image %>" alt="<%= product.title %>">
+              <% } %>
+
+              <div class="tag"><%= product.category %></div>
+              <h3><%= product.title %></h3>
+              <p><%= product.description || "-" %></p>
+              <div class="price">Rp <%= Number(product.price).toLocaleString("id-ID") %></div>
+
+              <% if (product.stock <= 0) { %>
+                <div class="stock sold">Sold Out</div>
+              <% } else if (product.stock <= 3) { %>
+                <div class="stock limited">Limited Stock: <%= product.stock %></div>
+              <% } else { %>
+                <div class="stock">Stock: <%= product.stock %></div>
+              <% } %>
+
+              <a
+                href="/admin/delete/<%= product.id %>"
+                class="delete-btn confirm-action"
+                data-confirm="Yakin mau hapus produk ini?"
+              >
+                Hapus Produk
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <section style="margin-top: 28px;">
+      <div class="section-head">
+        <h2>Data Bukti Transfer</h2>
+
+        <div class="section-tools">
+          <input
+            type="text"
+            id="orderSearch"
+            class="panel-search"
+            placeholder="Cari nama / ID order / produk..."
+          >
+
+          <select id="orderFilter" class="panel-filter">
+            <option value="all">Semua Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Lunas">Lunas</option>
+            <option value="Diproses">Diproses</option>
+            <option value="Selesai">Selesai</option>
+          </select>
+        </div>
+      </div>
+
+      <% if (!orders || orders.length === 0) { %>
+        <div class="empty-box premium-empty">
+          <div class="empty-icon">🧾</div>
+          <div>Belum ada order.</div>
+        </div>
+      <% } else { %>
+        <div class="orders-grid" id="ordersGrid">
+          <% orders.forEach(order => { %>
+            <div
+              class="order-card glass-box searchable-order"
+              data-search="<%= `${order.orderCode || ""} ${order.productTitle || ""} ${order.customerName || ""} ${order.customerWhatsapp || ""} ${order.category || ""} ${order.note || ""}`.toLowerCase() %>"
+              data-status="<%= order.status %>"
+            >
+              <div class="order-status status-<%= String(order.status).toLowerCase() %>"><%= order.status %></div>
+              <h3><%= order.productTitle %></h3>
+
+              <% if (order.paymentProof) { %>
+                <div class="proof-preview-wrap">
+                  <a href="/uploads/payments/<%= order.paymentProof %>" target="_blank" class="proof-thumb-link">
+                    <img
+                      src="/uploads/payments/<%= order.paymentProof %>"
+                      alt="Bukti Transfer"
+                      class="proof-thumb"
+                    >
+                  </a>
+                </div>
+              <% } %>
+
+              <p><strong>ID Order:</strong> <%= order.orderCode || "-" %></p>
+              <p><strong>Nama:</strong> <%= order.customerName || "-" %></p>
+              <p><strong>WA:</strong> <%= order.customerWhatsapp || "-" %></p>
+              <p><strong>Kategori:</strong> <%= order.category || "-" %></p>
+              <p><strong>Harga:</strong> Rp <%= Number(order.price || 0).toLocaleString("id-ID") %></p>
+              <p><strong>Catatan:</strong> <%= order.note || "-" %></p>
+
+              <% if (order.paymentProof) { %>
+                <a href="/uploads/payments/<%= order.paymentProof %>" target="_blank" class="order-btn">
+                  Lihat Bukti Transfer
+                </a>
+              <% } %>
+
+              <div class="status-actions">
+                <a href="/admin/order-status/<%= order.id %>/Pending">Pending</a>
+                <a href="/admin/order-status/<%= order.id %>/Lunas">Lunas</a>
+                <a href="/admin/order-status/<%= order.id %>/Diproses">Diproses</a>
+                <a href="/admin/order-status/<%= order.id %>/Selesai">Selesai</a>
+              </div>
+
+              <a
+                href="/admin/order-delete/<%= order.id %>"
+                class="delete-btn confirm-action"
+                data-confirm="Yakin mau hapus data order ini?"
+              >
+                Hapus Data
+              </a>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+    <div class="footer">© 2026 XYRON STORE</div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/xyron-realtime.js?v=2"></script>
+  <script src="/panel-ui.js"></script>
+</body>
+</html>

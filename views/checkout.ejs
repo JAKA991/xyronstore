@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout Produk - XYRON STORE</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="bg-fixed"></div>
+
+  <%
+    let savedOrder = null;
+    if (typeof uploadedOrder !== "undefined" && uploadedOrder) {
+      savedOrder = uploadedOrder;
+    }
+  %>
+
+  <div class="navbar">
+    <div class="nav-left">
+      <img src="/logo.jpg" class="logo-img" alt="Logo">
+      <div class="brand-text">
+        <span class="brand-name">XYRON STORE</span>
+        <small class="brand-sub">Premium Files Store</small>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <a href="/">Beranda</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="checkout-box glass-box">
+      <h1>Checkout Produk</h1>
+      <p class="checkout-desc">
+        Silakan lakukan pembayaran lalu upload bukti transfer.
+      </p>
+
+      <div class="checkout-detail">
+        <div class="checkout-line">
+          <strong>Produk</strong>
+          <span><%= product.title %></span>
+        </div>
+        <div class="checkout-line">
+          <strong>Kategori</strong>
+          <span><%= product.category %></span>
+        </div>
+        <div class="checkout-line">
+          <strong>Total</strong>
+          <span>Rp <%= Number(product.price).toLocaleString("id-ID") %></span>
+        </div>
+      </div>
+
+      <div class="qr-box">
+        <img src="/qris.jpg" class="qris-img" alt="QRIS">
+      </div>
+
+      <div class="payment-steps">
+        <h3>Cara Pembayaran</h3>
+        <ol>
+          <li>Scan QRIS di atas</li>
+          <li>Bayar sesuai harga</li>
+          <li>Isi data di bawah</li>
+          <li>Upload bukti transfer</li>
+          <li>Tunggu admin verifikasi pembayaran</li>
+        </ol>
+      </div>
+
+      <% if (error) { %>
+        <div class="error popup-show"><%= error %></div>
+      <% } %>
+
+      <% if (success && savedOrder) { %>
+        <div class="success-box popup-show">
+          <p><strong>Bukti transfer berhasil diupload.</strong></p>
+          <p style="margin-top:6px;">ID Order: <%= savedOrder.orderCode %></p>
+          <p style="margin-top:4px;">Status: <strong>Pending</strong></p>
+        </div>
+      <% } %>
+
+      <div id="previewBox" class="preview-box" style="display:none;">
+        <p>Preview Bukti Transfer</p>
+        <img id="previewImage" src="" alt="Preview">
+      </div>
+
+      <form
+        id="checkoutForm"
+        class="form-box"
+        action="/checkout/<%= product.id %>"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <input
+          id="customerName"
+          type="text"
+          name="customerName"
+          placeholder="Nama kamu"
+          value="<%= savedOrder ? savedOrder.customerName : '' %>"
+          required
+        >
+
+        <input
+          id="customerWhatsapp"
+          type="text"
+          name="customerWhatsapp"
+          placeholder="Nomor WhatsApp"
+          value="<%= savedOrder ? savedOrder.customerWhatsapp : '' %>"
+          required
+        >
+
+        <textarea
+          id="note"
+          name="note"
+          placeholder="Catatan (opsional)"
+        ><%= savedOrder ? savedOrder.note : '' %></textarea>
+
+        <input
+          id="paymentProof"
+          type="file"
+          name="paymentProof"
+          accept="image/*"
+          <%= savedOrder ? "" : "required" %>
+        >
+
+        <button id="uploadBtn" type="submit">
+          <%= savedOrder ? "Upload Lagi" : "Upload Bukti Transfer" %>
+        </button>
+      </form>
+
+      <% if (savedOrder) { %>
+        <a
+          id="waBtn"
+          class="wa-btn"
+          href="https://wa.me/6283141294802?text=<%= encodeURIComponent(
+            'Halo Xyron! 👋\n\n' +
+            'Saya ingin konfirmasi pembayaran:\n' +
+            '🧾 ID Order: ' + savedOrder.orderCode + '\n' +
+            '📦 Produk: ' + product.title + '\n' +
+            '📂 Kategori: ' + product.category + '\n' +
+            '💰 Harga: Rp ' + Number(product.price).toLocaleString('id-ID') + '\n' +
+            '👤 Nama: ' + savedOrder.customerName + '\n' +
+            '📱 WA: ' + savedOrder.customerWhatsapp + '\n' +
+            '📝 Catatan: ' + (savedOrder.note || '-') + '\n\n' +
+            'Saya sudah upload bukti transfer. Mohon dicek ya 🙏'
+          ) %>"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Konfirmasi via WhatsApp (Opsional)
+        </a>
+      <% } else { %>
+        <a
+          id="waBtn"
+          class="wa-btn wa-btn-disabled"
+          href="javascript:void(0)"
+        >
+          Konfirmasi via WhatsApp (Opsional)
+        </a>
+      <% } %>
+
+      <p class="note">
+        Setelah upload, pesanan masuk ke admin dengan status pending. WhatsApp hanya opsional.
+      </p>
+
+      <div class="action-row">
+        <a class="back-link" href="/">Kembali ke Beranda</a>
+      </div>
+    </div>
+
+    <div class="footer">© 2026 XYRON STORE</div>
+  </div>
+
+  <audio id="click-sound" preload="auto">
+    <source src="/click.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const customerName = document.getElementById("customerName");
+    const customerWhatsapp = document.getElementById("customerWhatsapp");
+    const paymentProof = document.getElementById("paymentProof");
+    const noteInput = document.getElementById("note");
+    const previewBox = document.getElementById("previewBox");
+    const previewImage = document.getElementById("previewImage");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const checkoutForm = document.getElementById("checkoutForm");
+    const clickSound = document.getElementById("click-sound");
+    const waBtn = document.getElementById("waBtn");
+
+    function saveUserData() {
+      localStorage.setItem("xyron_name", customerName.value);
+      localStorage.setItem("xyron_whatsapp", customerWhatsapp.value);
+      localStorage.setItem("xyron_note", noteInput.value);
+    }
+
+    function loadUserData() {
+      if (!customerName.value) {
+        customerName.value = localStorage.getItem("xyron_name") || "";
+      }
+      if (!customerWhatsapp.value) {
+        customerWhatsapp.value = localStorage.getItem("xyron_whatsapp") || "";
+      }
+      if (!noteInput.value) {
+        noteInput.value = localStorage.getItem("xyron_note") || "";
+      }
+    }
+
+    function playClickSoundFully() {
+      if (!clickSound) return Promise.resolve();
+
+      clickSound.pause();
+      clickSound.currentTime = 0;
+
+      const playPromise = clickSound.play();
+      if (playPromise && typeof playPromise.then === "function") {
+        return playPromise.catch(() => {});
+      }
+
+      return Promise.resolve();
+    }
+
+    paymentProof.addEventListener("change", function () {
+      const file = this.files[0];
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImage.src = e.target.result;
+          previewBox.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewBox.style.display = "none";
+      }
+    });
+
+    customerName.addEventListener("input", saveUserData);
+    customerWhatsapp.addEventListener("input", saveUserData);
+    noteInput.addEventListener("input", saveUserData);
+
+    // Upload bukti transfer TANPA suara
+    checkoutForm.addEventListener("submit", () => {
+      uploadBtn.textContent = "Uploading...";
+      uploadBtn.disabled = true;
+    });
+
+    // Suara hanya saat klik tombol WhatsApp
+    if (waBtn && !waBtn.classList.contains("wa-btn-disabled")) {
+      waBtn.addEventListener("click", async function (e) {
+        e.preventDefault();
+
+        const targetUrl = this.href;
+        this.style.pointerEvents = "none";
+        this.textContent = "Membuka WhatsApp...";
+
+        await playClickSoundFully();
+
+        // Biar suara nggak kepotong, tunggu sedikit lebih lama
+        setTimeout(() => {
+          window.open(targetUrl, "_blank");
+          this.style.pointerEvents = "auto";
+          this.textContent = "Konfirmasi via WhatsApp (Opsional)";
+        }, 450);
+      });
+    }
+
+    loadUserData();
+  </script>
+</body>
+</html>
