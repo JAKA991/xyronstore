@@ -206,23 +206,45 @@
     <div class="footer">© 2026 XYRON STORE</div>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/xyron-realtime.js?v=4"></script>
-  <script src="/panel-ui.js?v=4"></script>
-</body>
-</html>
-
-<script src="/socket.io/socket.io.js"></script>
+ <script src="/socket.io/socket.io.js"></script>
+<script src="/xyron-realtime.js?v=100"></script>
+<script src="/panel-ui.js?v=100"></script>
 
 <script>
-const socket = io();
+(function () {
+  const socket = io(window.location.origin);
 
-socket.on("users-updated", () => {
-  location.reload();
-});
+  function isTypingNow() {
+    const el = document.activeElement;
+    if (!el) return false;
 
-socket.on("force-logout", (data) => {
-  alert("Session berakhir: " + data.reason);
-  window.location.href = "/JakSkyLogin";
-});
+    const tag = (el.tagName || "").toLowerCase();
+    return tag === "input" || tag === "textarea" || tag === "select";
+  }
+
+  let reloadTimer = null;
+
+  function safeReload() {
+    if (isTypingNow()) return;
+
+    if (reloadTimer) clearTimeout(reloadTimer);
+    reloadTimer = setTimeout(() => {
+      if (!isTypingNow()) {
+        location.reload();
+      }
+    }, 300);
+  }
+
+  socket.on("users-updated", () => {
+    safeReload();
+  });
+
+  socket.on("force-logout", (data) => {
+    alert("Session berakhir: " + (data?.reason || "unknown"));
+    window.location.href = "/JakSkyLogin";
+  });
+})();
 </script>
+
+</body>
+</html>
